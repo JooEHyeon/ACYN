@@ -2,60 +2,44 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 import re
+import json
 
+cookies = {
+    '_TI_NID': 'iok9mjEFfnWoNqMjDA5hhW8k8kKH0Wiv8TYB6cQK/PKjTcLbEABjYteWe2L9+Sj6X0L25eis8QV+IXJuAbaCWQ==',
+    '__T_': '1',
+    '_fbp': 'fb.1.1598431157982.2053593330',
+    'VOTE': 'MTAuMTk%3D',
+    'MY': 'MTAuMTk%3D',
+    'ORDER': 'MTAuMTk%3D',
+    'TIARA': '4GrXQNB3I4eNj4AL_shwBbHRF5Gi_VgqD.Tm_v6ks1f.mI.PhtF-cQcKlL9XRlE6P21aOk2QXgar-GKtYlYX-vIcfxLO7SBB',
+}
+
+headers = {
+    'Connection': 'keep-alive',
+    'Accept': 'application/json, text/javascript, */*; q=0.01',
+    'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Mobile Safari/537.36',
+    'X-Requested-With': 'XMLHttpRequest',
+    'Referer': 'http://webtoon.daum.net/',
+    'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+}
+
+params = (
+    ('timeStamp', '1598517670442'),
+)
 
 day_all = ['mon', 'tue', 'wed','thu','fri','sat','sun']
 
+daum_webtoon = {}
+
 for day in day_all : 
-    daum_wt_URL = 'http://webtoon.daum.net/#day='+day+'&tab=day'
-
-    daum_response = requests.get(daum_wt_URL)
-
-    soup = BeautifulSoup(daum_response.text,'html.parser')
-
-    daum_wts = soup.select('#dayList1')
-
-    # Result:
-    <p id="dayList1">No javascript support</p>
-
-    print(daum_wts)
-
-    break
-
-# naver_wt_names = []
-# naver_wt_days = []
-# naver_wt_ids = []
-
-# for naver_wt in naver_wts:
-#     naver_wt_id = naver_wt.select( 'div.col_inner > ul > li > a')
-#     for info in naver_wt_id:
-#         naver_wt_ids.append(info['href'].split('&')[-2].split('=')[-1])
-#         naver_wt_days.append(info['href'].split('=')[-1])
-#         naver_wt_names.append(info.text)
-
-# # print(naver_wt_names)
-
-# naver_wt_intro = []
-
-# for i in range(len(naver_wt_names)):
-#     naver_wt_id = naver_wt_ids[i]
-#     naver_wt_day = naver_wt_days[i]
-#     naver_detail_URL = 'https://comic.naver.com/webtoon/list.nhn?titleId='+naver_wt_id+'&weekday='+naver_wt_day
-#     naver_detail_response = requests.get(naver_detail_URL)
-#     soup = BeautifulSoup(naver_detail_response.text, 'html.parser')
-#     naver_intros = soup.select('#content > div.comicinfo > div.detail > p')
-#     naver_intros = re.sub("<.*?>", " ", str(naver_intros))
-#     naver_intros = naver_intros.replace('[',' ').replace(']', ' ').strip()
-#     naver_wt_intro.append(naver_intros)
+        daum_wt_response = requests.get('http://webtoon.daum.net/data/pc/webtoon/list_serialized/'+day, headers=headers, params=params, cookies=cookies,verify=False)
+        daum_dict = json.loads(daum_wt_response.text)
+        for i in range(len(daum_dict['data'])):
+            daum_webtoon[daum_dict['data'][i]['title']] = daum_dict['data'][i]['introduction']
 
 
-# naver_webtoon = {}
-
-# for i in range(len(naver_wt_names)):
-#     naver_webtoon[naver_wt_names[i]] = naver_wt_intro[i]
-
-# with open('naver_webtoon.csv', 'w', newline='',encoding='utf-8-sig') as file:
-#   writer = csv.DictWriter(file, fieldnames = ['name', 'intro'])
-#   for key in naver_webtoon.keys():
-#       writer.writerow({'name' : key, 'intro' : naver_webtoon[key]})
+with open('daum_webtoon.csv', 'w', newline='',encoding='utf-8-sig') as file:
+  writer = csv.DictWriter(file, fieldnames = ['name', 'intro'])
+  for key in daum_webtoon.keys():
+      writer.writerow({'name' : key, 'intro' : daum_webtoon[key]})
 
