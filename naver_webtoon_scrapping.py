@@ -25,6 +25,7 @@ for naver_wt in naver_wts:
 # print(naver_wt_names)
 
 naver_wt_intro = []
+naver_wt_url = []
 
 for i in range(len(naver_wt_names)):
     naver_wt_id = naver_wt_ids[i]
@@ -36,15 +37,19 @@ for i in range(len(naver_wt_names)):
     naver_intros = re.sub("<.*?>", " ", str(naver_intros))
     naver_intros = naver_intros.replace('[',' ').replace(']', ' ').strip()
     naver_wt_intro.append(naver_intros)
+    naver_wt_url.append(naver_detail_URL)
 
 
 naver_webtoon = {}
 
 for i in range(len(naver_wt_names)):
-    naver_webtoon[naver_wt_names[i]] = naver_wt_intro[i]
+    naver_webtoon[naver_wt_names[i]] = {
+        'intro': naver_wt_intro[i],
+        'url' : naver_wt_url[i]
+    }
 
 with open('naver_webtoon.csv', 'w', newline='',encoding='utf-8-sig') as file:
-  writer = csv.DictWriter(file, fieldnames = ['name', 'intro'])
+  writer = csv.DictWriter(file, fieldnames = ['name', 'intro', 'url'])
   for key in naver_webtoon.keys():
-      writer.writerow({'name' : key, 'intro' : naver_webtoon[key]})
+      writer.writerow({'name' : key, 'intro' : naver_webtoon[key]['intro'], 'url' : naver_webtoon[key]['url']})
 

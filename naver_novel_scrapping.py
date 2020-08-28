@@ -22,7 +22,7 @@ for genre in genre_id:
 
 all_nvl_name = []
 all_nvl_intro = []
-
+all_nvl_url = []
 
 for nvl_ids in all_nvl_ids:
     detail_nvl_URL = 'https://novel.naver.com/webnovel/list.nhn?novelId='+nvl_ids
@@ -34,15 +34,20 @@ for nvl_ids in all_nvl_ids:
 
     all_nvl_intro.append(detail_intro)
     all_nvl_name.append(detail_name)
+    all_nvl_url.append(detail_nvl_URL)
 
 
 naver_novel = {}
 
 for i in range(len(all_nvl_name)):
-    naver_novel[all_nvl_name[i]] = all_nvl_intro[i]
+    naver_novel[all_nvl_name[i]] = {
+        'intro' : all_nvl_intro[i],
+        'url' : all_nvl_url[i]
+    }
+    # naver_novel[all_nvl_name[i]] = all_nvl_intro[i] 
 
 with open('naver_novel.csv', 'w', newline='',encoding='utf-8-sig') as file:
-  writer = csv.DictWriter(file, fieldnames = ['name', 'intro'])
+  writer = csv.DictWriter(file, fieldnames = ['name', 'intro', 'url'])
   for key in naver_novel.keys():
-      writer.writerow({'name' : key, 'intro' : naver_novel[key]})
+      writer.writerow({'name' : key, 'intro' : naver_novel[key]['intro'], 'url' : naver_novel[key]['url']})
 
