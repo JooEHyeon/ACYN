@@ -35,11 +35,13 @@ for day in day_all :
         daum_wt_response = requests.get('http://webtoon.daum.net/data/pc/webtoon/list_serialized/'+day, headers=headers, params=params, cookies=cookies,verify=False)
         daum_dict = json.loads(daum_wt_response.text)
         for i in range(len(daum_dict['data'])):
-            daum_webtoon[daum_dict['data'][i]['title']] = daum_dict['data'][i]['introduction']
-
+            daum_webtoon[daum_dict['data'][i]['title']] = {
+                'intro': daum_dict['data'][i]['introduction'],
+                'url' : 'http://webtoon.daum.net/webtoon/view/'+ daum_dict['data'][i]['nickname']
+            }
 
 with open('daum_webtoon.csv', 'w', newline='',encoding='utf-8-sig') as file:
-  writer = csv.DictWriter(file, fieldnames = ['name', 'intro'])
+  writer = csv.DictWriter(file, fieldnames = ['name', 'intro', 'url'])
   for key in daum_webtoon.keys():
-      writer.writerow({'name' : key, 'intro' : daum_webtoon[key]})
+      writer.writerow({'name' : key, 'intro' : daum_webtoon[key]['intro'], 'url': daum_webtoon[key]['url']})
 
