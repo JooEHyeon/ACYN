@@ -3,7 +3,11 @@ import urllib.request
 import pandas as pd
 
 # 크롤링한 결과 저장할 df 만들어놓기
+<<<<<<< HEAD
 df = pd.DataFrame(columns=["page_num", "title", "genre", "year", "netflix","link"])
+=======
+df = pd.DataFrame(columns=["page_num", "title", "genre", "year", "netflix", "url"])
+>>>>>>> d9f6920d4b0fc6bddd88e976fc3fe5ac0153174b
 count = 0
 
 # 크롤링
@@ -19,10 +23,18 @@ for num in range(1,8000):
             year = title_year[-5:-1] #연도만
             genre = soup.find_all("h3")[1].text.strip()
             netflix = soup.select_one("#card > div.text-block > p").text.strip()
+<<<<<<< HEAD
             link = soup.select_one("#bo_v_link > ul > button > a")['title']
 
             df.loc[num] = [num, title, genre, year, netflix,link]
             count+=1
+=======
+            url = soup.select_one("#bo_v_link > ul > button > a")['title']
+
+
+            df.loc[num] = [num, title, genre, year, netflix, url]
+            # count+=1
+>>>>>>> d9f6920d4b0fc6bddd88e976fc3fe5ac0153174b
             print(num)
         except:
             print("except",num)
